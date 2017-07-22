@@ -1,4 +1,4 @@
-package de.panzercraft.plugin.util;
+package de.codemakers.plugin.util;
 
 /**
  * Util

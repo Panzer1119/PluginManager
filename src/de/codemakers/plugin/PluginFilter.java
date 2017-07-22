@@ -1,4 +1,4 @@
-package de.panzercraft.plugin;
+package de.codemakers.plugin;
 
 import java.io.File;
 import java.util.jar.JarEntry;

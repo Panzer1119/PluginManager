@@ -1,7 +1,7 @@
-package de.panzercraft.plugin.impl;
+package de.codemakers.plugin.impl;
 
-import de.panzercraft.plugin.PluginFilter;
-import de.panzercraft.plugin.util.Util;
+import de.codemakers.plugin.PluginFilter;
+import de.codemakers.plugin.util.Util;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
