@@ -147,7 +147,7 @@ public class PluginLoader {
             plugin.loadClasses(filter);
             plugin.createPluggableInstances();
         });
-        return null;
+        return classLoader;
     }
 
     protected static final ClassLoader createClassLoader(Plugin[] plugins) {

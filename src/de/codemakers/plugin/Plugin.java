@@ -57,9 +57,6 @@ public class Plugin {
     }
 
     public final ClassLoader getClassLoader() {
-        if (classLoader == null) {
-            createClassLoader();
-        }
         return classLoader;
     }
 
@@ -70,7 +67,7 @@ public class Plugin {
     
     protected final Plugin createClassLoader() {
         try {
-            classLoader =   new URLClassLoader(new URL[] {toURL()});
+            classLoader = new URLClassLoader(new URL[] {toURL()});
             return this;
         } catch (Exception ex) {
             if (PluginLoader.DEBUG_MODE) {
