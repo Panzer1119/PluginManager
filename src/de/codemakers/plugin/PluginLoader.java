@@ -138,7 +138,7 @@ public class PluginLoader {
         if (filter == null || plugins == null || plugins.isEmpty()) {
             return null;
         }
-        final ClassLoader classLoader = createURLClassLoader(plugins.toArray(new Plugin[plugins.size()]));
+        final ClassLoader classLoader = createClassLoader(plugins.toArray(new Plugin[plugins.size()]));
         if (classLoader == null) {
             return null;
         }
@@ -150,7 +150,7 @@ public class PluginLoader {
         return classLoader;
     }
 
-    protected static final URLClassLoader createURLClassLoader(Plugin[] plugins) {
+    protected static final ClassLoader createClassLoader(Plugin[] plugins) {
         try {
             final ArrayList<URL> urls = new ArrayList<>();
             for (Plugin plugin : plugins) {
