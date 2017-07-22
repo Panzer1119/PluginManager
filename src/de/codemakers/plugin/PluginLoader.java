@@ -15,7 +15,6 @@ public class PluginLoader {
     public static boolean DEBUG_MODE = false;
     public static boolean PRECISE_DEBUG_MODE = false;
 
-    private ClassLoader classLoader = null;
     private PluginFilter filter = null;
     private ArrayList<Plugin> plugins = null;
 
@@ -82,23 +81,40 @@ public class PluginLoader {
         } else if (files.length == 0) {
             return true;
         }
-        if (classLoader != null) {
-            classLoader.clearAssertionStatus();
-            classLoader = null;
-        }
-        if (plugins != null) { //TODO Maybe add an unloading function?
+        if (plugins != null) {
+            unloadPlugins();
             plugins.clear();
         }
         plugins = loadFilesInternal(filter, files);
-        classLoader = loadPluginsInternal(filter, plugins);
-        if (PluginLoader.DEBUG_MODE) {
-            System.out.println(String.format("Loaded %d Plugin(s)!", getPluggables().size()));
+        if (loadPluginsInternal(filter, plugins)) {
+            if (PluginLoader.DEBUG_MODE) {
+                System.out.println(String.format("Loaded %d Plugin(s)!", getPluggables().size()));
+            }
         }
         return isLoaded();
     }
 
     public final boolean isLoaded() {
-        return plugins != null && classLoader != null;
+        return plugins != null;
+    }
+    
+    public final boolean unloadPlugins() {
+        if (plugins == null) {
+            return false;
+        }
+        plugins.stream().forEach((plugin) -> {
+            try {
+                if (plugin.getClassLoader() != null) {
+                    plugin.getClassLoader().clearAssertionStatus();
+                    plugin.setClassLoader(null);
+                }
+            } catch (Exception ex) {
+                if (PluginLoader.DEBUG_MODE) {
+                    System.err.println(ex);
+                }
+            }
+        });
+        return true;
     }
 
     protected static final ArrayList<Plugin> loadFilesInternal(PluginFilter filter, File... files) {
@@ -134,20 +150,16 @@ public class PluginLoader {
         }
     }
 
-    protected static final ClassLoader loadPluginsInternal(PluginFilter filter, ArrayList<Plugin> plugins) {
+    protected static final boolean loadPluginsInternal(PluginFilter filter, ArrayList<Plugin> plugins) {
         if (filter == null || plugins == null || plugins.isEmpty()) {
-            return null;
-        }
-        final ClassLoader classLoader = createClassLoader(plugins.toArray(new Plugin[plugins.size()]));
-        if (classLoader == null) {
-            return null;
+            return false;
         }
         plugins.stream().forEach((plugin) -> {
-            plugin.setClassLoader(classLoader);
+            plugin.createClassLoader();
             plugin.loadClasses(filter);
             plugin.createPluggableInstances();
         });
-        return classLoader;
+        return true;
     }
 
     protected static final ClassLoader createClassLoader(Plugin[] plugins) {
