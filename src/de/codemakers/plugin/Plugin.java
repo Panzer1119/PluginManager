@@ -3,6 +3,7 @@ package de.codemakers.plugin;
 import java.io.File;
 import java.io.FileInputStream;
 import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
@@ -56,12 +57,27 @@ public class Plugin {
     }
 
     public final ClassLoader getClassLoader() {
+        if (classLoader == null) {
+            createClassLoader();
+        }
         return classLoader;
     }
 
     protected final Plugin setClassLoader(ClassLoader classLoader) {
         this.classLoader = classLoader;
         return this;
+    }
+    
+    protected final Plugin createClassLoader() {
+        try {
+            classLoader =   new URLClassLoader(new URL[] {toURL()});
+            return this;
+        } catch (Exception ex) {
+            if (PluginLoader.DEBUG_MODE) {
+                System.err.println(ex);
+            }
+            return null;
+        }
     }
 
     protected final URL toURL() {
